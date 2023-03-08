@@ -5,19 +5,23 @@
  *
  * code by Dante Davis
  *     started: 2022/03/04 (YYYY/MM/DD)
- * last edited: 2022/03/05
+ * last edited: 2022/03/07
  */
 document.body.innerHTML = `
 <img src="title.jpg" width="512" height="256"></img>
 <div class="border">
-<p>welcome all to Juphump</p>
-<a href="story"><h3>Campaign</h3></a>
-<a href="editor"><h3>Editor</h3></a>
-<h2>Community:</h2>
-<div class="border">
-<a href="levels"><p>User Levels</p></a>
-<a href="stats"><p>Leaderboard</p></a>
-<a href="https://discord.gg/UAwVuBQx"><p>Discord Server</p></a>
-</div>
+	<p>welcome all to Juphump, avoid the black and touch the green.</p>
+	<a href="story"><h3>Campaign</h3></a>
+	<a href="editor"><h3>Editor</h3></a>
+	<h2>Community:</h2>
+	<div class="border">
+		<a href="levels"><p>User Levels (Not Ready)</p></a>
+		<a href="stats"><p>Leaderboard (Not Ready)</p></a>
+		<a href="https://discord.gg/UAwVuBQx"><p>Discord Server</p></a>
+	</div>
+	<h2>Credits:</h2>
+	<div class="border">
+		<a href="https://github.com/dtinth/comic-mono-font"><p>Comic Mono Font</p></a>
+	</div>
 </div>
 `;
