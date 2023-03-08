@@ -18,22 +18,23 @@ var levels = [
 ];
 var lvl = -1;
 function nextLevel() {
-	lvl = (lvl + 1) % levels.length;
-	document.getElementById("name").innerText = `Level ${lvl}`;
-	level.map = atob(levels[lvl]).split("\n");
-	flush(lc);
-	drawLevel();
-	unwin();
-	if (lvl == 0)
+	lvl = (lvl + 1) % levels.length;			// get the index of the next level
+	document.getElementById("name").innerText = `Level ${lvl}`;	// display the name of the level
+	level.map = atob(levels[lvl]).split("\n");		// uses map data rather than level data for the levels so...
+	try{flush(lc);}catch{}					// stupid fix for a stupid bug
+	size = getLevelSize();					// get the level's size
+	drawLevel();						// draw the level
+	unwin();						// unwin, removes the "level complete" text
+	if (lvl == 0)						// reset the timer if the player completed all the levels
 		timer = 0;
-	if (lvl == levels.length - 1) {
+	if (lvl == levels.length - 1) {				// if you reach the last level then it will record your time if you beat your record
 		if (timer < getCookie("bestTime") || getCookie("bestTime") == 0) 
 			setCookie("bestTime", Math.floor(timer));
 		bestEl.innerText = "Best Time: " + getCookie("bestTime");
-		document.getElementById("name").innerText = `U Win`;
+		document.getElementById("name").innerText = `U Win`;		// "Level (insert number here)" isn't a very good name for a level that just contains the text "u win"
 	}
 }
-nextLevel();
+nextLevel();	// fetch the first level
 if (getCookie("bestTime") == "")
 	setCookie("bestTime", 0);
 bestEl.innerText = "Best Time: " + getCookie("bestTime");
