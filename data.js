@@ -135,10 +135,10 @@ if (url.length > 1) {
 	try {
 		level = 
 			JSON.parse(fromB64(url[1]));
-		if (!level.hasOwnProperty("startPos")) {
+		if (typeof level.magic == "undefined") {
 			level.startPos = [0, 0];
 		}
-		if (!level.hasOwnProperty("magic")) {
+		if (typeof level.magic == "undefined") {
 			level.magic = {};
 		}
 	} catch (exception) {window.alert("invalid level data")}
