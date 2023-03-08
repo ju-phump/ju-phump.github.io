@@ -18,8 +18,10 @@ lvlContainer.id = "lvlContainer"						//
 	lvlCanvas.width =										// set the size of the canvases/containers
 	lvlCanvas.height =										//
 	plrCanvas.width =										//
-	plrCanvas.height = Math.min(innerWidth, innerHeight) * 0.8;	//
-lvlContainer.appendChild(lvlCanvas);
+	plrCanvas.height = Math.min(innerWidth, innerHeight) * 0.8;	// ---
+plrCanvas.className = "dotted";							// add a dotted border
+														// ---
+lvlContainer.appendChild(lvlCanvas);					// 
 document.body.appendChild(lvlContainer);				// add the canvases to the document
 document.body.appendChild(plrCanvas);					// 
 														// ---
@@ -104,6 +106,9 @@ function onFrame() {
 	} else if (buffer) {
 		buffer = false;
 	}
+	if (keys["s"]) {		// set players position on the start of the level
+		level.startPos = [cam.x, cam.y];
+	}
 	
 	if (lvlCanvas.width != Math.min(innerWidth, innerHeight)) {
 		lvlCanvas.width =										// update the size
@@ -122,24 +127,26 @@ function onFrame() {
 		pTile.y * 16, 
 	16, 16, false);
 	pc.fillStyle = "#000000";
-	drawRect(pc, 
-		256, 
-		256, 
-	8, 8);
+	if (cam.x == level.startPos[0] && cam.y == level.startPos[1])
+		drawRect(pc, 
+			256, 
+			256, 
+		8, 8);
 	if (mouse.down && mouse.x > 0 && mouse.y > 0) {
-		var 
+		var
 			x = pTile.x + (32 * cam.x),
 			y = pTile.y + (32 * cam.y);
-		while (level.map.length < y) {
-			level.map.append("");
+		while (level.map.length < y + 1) {	// update level size if the level is too small
+			level.map.push("");
 		}
-		while (level.map[y].length < x) {
+		while (level.map[y].length < x + 1) {	// update level size if the level is too small
 			level.map[y] += "0";
 		}
-		level.map[y] = `${level.map[y].substring(0, x)}${item}${level.map[y].substring(x + 1)}`;
-		flush(lc);
-		size = getMapSize();
-		drawLevel();
+		var line = level.map[y]
+		level.map[y] = line.substring(0, x) + item + line.substring(x + 1);	// set the currently selected tile to the selected tile type
+		flush(lc);															// flush the level canvas
+		size = getMapSize();												// update size of the level
+		drawLevel();														// update the level canvas
 	}
 	setTimeout(onFrame, ms);
 }
@@ -147,23 +154,29 @@ setSpeed(1);
 setFps(30);
 setTimeout(onFrame, ms);
 var menu = document.createElement("div");
+menu.id = "menu"
 menu.innerHTML += `
-<p>press the + key (to the left of backspace) and the - key to iterate through the tiles</p>
-<br><button onclick="window.location.href = 'https://ju-phump.4j89.repl.co/player/?=' + toB64(JSON.stringify(level));">Playtest</button>
-<br>
-<br><textarea id="importMapData"></textarea>
-<br><button id="importMapButton">Import Map</button>
-<br>
-<br><button id="exportMapButton">Export Map</button>
-<br><textarea id="exportMapData"></textarea>
-<br>
-<br><button id="exportButton">Export Data</button>
-<br><textarea id="exportData"></textarea>
-<br><p>Import File:</p>
-<input type="file" id="importFileData" name="filename">
-<br>
-<br><button id="downloadButton">Export File</button>
-<a id="downloadLink"><p></p></a>
+<div id="menuContents">
+	<a>press the "+" key (to the left of backspace) and the "-" key to iterate through the tiles</a>
+	<br><a>press the "S" key to set the player's start position</a>
+	<br>
+	<br><button onclick="window.location.href = 'https://ju-phump.4j89.repl.co/player/?=' + toB64(JSON.stringify(level));">Playtest</button>
+	<br>
+	<br><textarea id="importMapData"></textarea>
+	<br><button id="importMapButton">Import Map</button>
+	<br>
+	<br><button id="exportMapButton">Export Map</button>
+	<br><textarea id="exportMapData"></textarea>
+	<br>
+	<br><button id="exportButton">Export Data</button>
+	<br><textarea id="exportData"></textarea>
+	<br><p>Import File:</p>
+	<input type="file" id="importFileData" name="filename">
+	<br>
+	<br><button id="downloadButton">Export File</button>
+	<a id="downloadLink"><p></p></a>
+</div>
+<br><button id="toggleButton">hide</button>
 `;
 document.body.appendChild(menu);
 drawLevel();
@@ -195,6 +208,17 @@ document.getElementById("downloadButton").onclick = function () {
 	out.setAttribute("download", name);
 	out.innerText = name;
 }
+document.getElementById("toggleButton").onclick = function () {
+	var newVal = document.getElementById("menuContents").getAttribute("visible") == "false";
+	document.getElementById("menuContents").setAttribute("visible", newVal);
+	document.getElementById("menu").setAttribute("transparent", !newVal);
+	if (newVal)
+		document.getElementById("toggleButton").innerText = "hide";
+	else
+		document.getElementById("toggleButton").innerText = "show";
+}
+
+
 lvlContainer.style.width =
 	lvlContainer.style.height = Math.min(innerWidth, innerHeight) * 0.8 + "px";
 

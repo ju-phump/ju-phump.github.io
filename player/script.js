@@ -44,8 +44,8 @@ var move = (128 * speed) * (ms / 1000);		// tells the player how many pixels it 
 
 var 
 	player = {			// the player's position
-		x: 256,
-		y: 256
+		x: 256 + (level.startPos[0] * 512),
+		y: 256 + (level.startPos[1] * 512)
 	},
 	pTile = {			// which tile the player is currently on
 		x: 0,
@@ -59,7 +59,7 @@ var
 	gravity = 1;		// the gravity on the player (positive = down, negative = up)
 
 var keys = {};		// what keys are being pressed
-var buffer = false;		// so that we can be very nice to the player
+var buffer = true;		// so that we can be very nice to the player (all collisions excluding the one with green tiles give you a frame before they actually happen)
 var timer = 0;
 function setFps(v) {						// sets the framerate
 	ms = 1000/v;
@@ -78,11 +78,16 @@ function setFrameSpeed(fps, spd) {		// sets the speed of the game (maintains mov
 
 function reset() {
 	player = {
-		x: 256,
-		y: 256
+		x: 256 + (level.startPos[0] * 512),
+		y: 256 + (level.startPos[1] * 512)
 	};
-	lvlCanvas.style.transform = "transform(-50%,-50%)";
+	cam.x = Math.floor(player.x / 512);				// set the camera's position
+	cam.y = Math.floor(player.y / 512);
+	lvlCanvas.style.transform = "translate("		// offset the level
+		+ -(cam.x * plrCanvas.width) + "px,  "
+		+ -(cam.y * plrCanvas.width) + "px)";
 	started = false;
+	buffer = true;									// if you're colliding with something on start then it should affect you immediately rather than waiting a frame
 	document.getElementById("text").setAttribute("visible", true);
 	console.log(started);
 	gravity = 1;
@@ -92,16 +97,12 @@ function unwin() {
 }
 function win() {
 	player = {
-		x: 256,
-		y: 256
+		x: 256 + (level.startPos[0] * 512),
+		y: 256 + (level.startPos[1] * 512)
 	};
-	lvlCanvas.style.transform = "transform(-50%,-50%)";
-	started = false;
-	document.getElementById("text").setAttribute("visible", true);
-	document.getElementById("text").innerText = "press any key to start (level complete)";
-	console.log(started);
-	gravity = 1;
-	try{nextLevel();}catch{}
+	document.getElementById("text").innerText = "press any key to start (level completed)";
+	reset();
+	try{nextLevel();}catch{}	// runs a function so that people can implement series of levels that go to the next after you win
 }
 function start() {
 	started = true;
@@ -113,8 +114,6 @@ function start() {
 }
 
 function onFrame() {
-	
-	
 	if (keys["w"] || keys["ArrowUp"]) {
 		player.y -= move * Math.sign(gravity);
 	} else {
@@ -132,8 +131,17 @@ function onFrame() {
 	pTile.x = Math.floor((player.x) / 16);						// calculate which tile the player is on
 	pTile.y = Math.floor((player.y) / 16);						//		this is useful for the collision detection
 	try{pTile.v = level.map[pTile.y][pTile.x];}catch (e){console.warn(e);pTile.v = 0;}	//	the type of the tile the player is on
-
-	if (pTile.v != 0) {
+	var posFormat = "p" + pTile.x + "," + pTile.y;
+	if (level.magic.hasOwnProperty(posFormat)) {
+		var spell = level.magic[posFormat];
+		if (buffer) {
+			if (spell[0] == "teleport") {
+				player.x = spell[1][0] * 16 + (player.x % 16);
+				player.y = spell[1][1] * 16 + (player.y % 16);
+			}
+		} else
+			buffer = true;
+	} else if (pTile.v != 0) {
 		if (buffer) {
 			if (pTile.v == "1")
 				reset();
@@ -193,6 +201,8 @@ bestEl.innerText = "Best Time: " + getCookie("bestTime") || "0 ms";
 bestEl.id = "timer";
 document.body.appendChild(bestEl);
 drawLevel();
-
+cam.x = Math.floor(player.x / 512);
+cam.y = Math.floor(player.y / 512);
+lvlCanvas.style.transform = "translate(" + -(cam.x * plrCanvas.width) + "px,  " + -(cam.y * plrCanvas.width) + "px)";
 lvlContainer.style.width =
 	lvlContainer.style.height = Math.min(innerWidth, innerHeight) * 0.8 + "px";
