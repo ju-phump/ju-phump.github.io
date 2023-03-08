@@ -131,7 +131,7 @@ function onFrame() {
 	}
 	pTile.x = Math.floor((player.x) / 16);						// calculate which tile the player is on
 	pTile.y = Math.floor((player.y) / 16);						//		this is useful for the collision detection
-	try{pTile.v = level.map[pTile.y][pTile.x];}catch{pTile.v = 0;}	//	the type of the tile the player is on
+	try{pTile.v = level.map[pTile.y][pTile.x];}catch (e){console.warn(e);pTile.v = 0;}	//	the type of the tile the player is on
 
 	if (pTile.v != 0) {
 		if (buffer) {
@@ -145,7 +145,7 @@ function onFrame() {
 			buffer = true;
 	} else if (buffer)
 		buffer = false;
-	else if (pTile.v == "2")
+	if (pTile.v == "2")
 		win();
 	if (Math.floor(player.x / 512) != cam.x || Math.floor(player.y / 512) != cam.y) {
 		cam.x = Math.floor(player.x / 512);
