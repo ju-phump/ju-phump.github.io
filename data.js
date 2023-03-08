@@ -5,7 +5,7 @@
  *
  * code by Dante Davis
  *     started: 2022/03/05 (YYYY/MM/DD)
- * last edited: 2022/03/07
+ * last edited: 2022/03/08
  */
 function toB64(string) { // https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
 	const codeUnits = new Uint16Array(string.length);
@@ -93,6 +93,7 @@ String.prototype.replaceAt = function(index, replacement) {
 }
 var level = {
 	"name": null,
+	"startPos": [0,0],
 	"map": [
 		"11111111111111111111111111111111",
 		"10000000000000000000000000000001",
@@ -126,14 +127,21 @@ var level = {
 		"10000000000000000000000000000001",
 		"10000000000000000000000000000001",
 		"11111111111111111111111111111111"
-	]
+	],
+	"magic": {}
 };
 var url = window.location.href.split("?=")
 if (url.length > 1) {
 	try {
 		level = 
 			JSON.parse(fromB64(url[1]));
-	} catch (exception) {window.alert(exception)}
+		if (!level.hasOwnProperty("startPos")) {
+			level.startPos = [0, 0];
+		}
+		if (!level.hasOwnProperty("magic")) {
+			level.magic = {};
+		}
+	} catch (exception) {window.alert("invalid level data")}
 }
 document.body.innerHTML += `<h1 id="name">${level.name || "Nameless"}</h1>`;
 var size = getMapSize();

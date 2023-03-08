@@ -5,7 +5,7 @@
  *
  * code by Dante Davis
  *     started: 2022/03/04 (YYYY/MM/DD)
- * last edited: 2022/03/07
+ * last edited: 2022/03/08
  */
 var lvlContainer = document.createElement("div")		// container for the level canvas
 var plrCanvas = document.createElement("canvas");		// the canvas where the player is drawn
