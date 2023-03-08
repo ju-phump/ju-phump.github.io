@@ -148,6 +148,7 @@ setFps(30);
 setTimeout(onFrame, ms);
 var menu = document.createElement("div");
 menu.innerHTML += `
+<p>press the + key (to the left of backspace) and the - key to iterate through the tiles</p>
 <br><button onclick="window.location.href = 'https://ju-phump.4j89.repl.co/player/?=' + toB64(JSON.stringify(level));">Playtest</button>
 <br>
 <br><textarea id="importMapData"></textarea>
