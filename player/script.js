@@ -74,8 +74,6 @@ function setFrameSpeed(fps, spd) {		// sets the speed of the game (maintains mov
 	move = (128 * speed) * (ms / 1000);
 	ms /= spd;
 }
-
-
 function reset() {
 	player = {
 		x: 256 + (level.startPos[0] * 512),
@@ -89,6 +87,7 @@ function reset() {
 	started = false;
 	buffer = true;									// if you're colliding with something on start then it should affect you immediately rather than waiting a frame
 	document.getElementById("text").setAttribute("visible", true);
+	document.getElementById("lvlInfo").setAttribute("visible", true);
 	console.log(started);
 	gravity = 1;
 }
@@ -110,6 +109,7 @@ function start() {
 	flush(lc);
 	drawLevel();
 	document.getElementById("text").setAttribute("visible", false);
+	document.getElementById("lvlInfo").setAttribute("visible", false);
 	console.log(started);
 }
 

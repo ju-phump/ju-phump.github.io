@@ -22,6 +22,13 @@ function fromB64(encoded) {
 	}
 	return String.fromCharCode(...new Uint16Array(bytes.buffer));
 }
+function genData() {
+	var data = Object.assign({}, level);		// create a copy of the level data (to avoid modifying it)
+	data.name = toB64(data.name);
+	data.author = toB64(data.author);
+	data.description = toB64(data.description);
+	return btoa(JSON.stringify(data));
+}
 function setCookie(cname, cvalue) {
 	document.cookie = cname + "=" + cvalue + ";path=/";
 }
@@ -92,7 +99,9 @@ String.prototype.replaceAt = function(index, replacement) {
     return this.substring(0, index) + replacement + this.substring(index + replacement.length);
 }
 var level = {
-	"name": null,
+	"name": "",
+	"author": "",
+	"description": "",
 	"startPos": [0,0],
 	"map": [
 		"11111111111111111111111111111111",
@@ -133,15 +142,18 @@ var level = {
 var url = window.location.href.split("?=")
 if (url.length > 1) {
 	try {
-		level = 
-			JSON.parse(fromB64(url[1]));
-		if (typeof level.magic == "undefined") {
-			level.startPos = [0, 0];
-		}
-		if (typeof level.magic == "undefined") {
-			level.magic = {};
-		}
+		var data = 
+			JSON.parse(atob(url[1]));
+		level.name = fromB64(data.name);
+		level.author = fromB64(data.author);
+		level.description = fromB64(data.description);
 	} catch (exception) {window.alert("invalid level data")}
 }
-document.body.innerHTML += `<h1 id="name">${level.name || "Nameless"}</h1>`;
+document.body.innerHTML += `
+<div id="lvlInfo">
+	<h1 id="name">${level.name || "Nameless"}</h1>
+	<h3 id="author">${level.author || "No Author"}</h3>
+	<p id="description">${level.description || "No Description"}</p>
+</div>
+`;
 var size = getMapSize();
