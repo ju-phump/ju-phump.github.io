@@ -93,7 +93,9 @@ var lvl = -1;
 function nextLevel() {
 	lvl = (lvl + 1) % levels.length;		// get the index of the next level
 	level = levels[lvl];					// get level data
-	document.getElementById("name").innerText = level.name;	// display the name of the level
+	document.getElementById("name").innerText = level.name;					// display level info
+	document.getElementById("author").innerText = level.author;				// 
+	document.getElementById("description").innerText = level.description;	// ---
 	try{flush(lc);}catch{}					// stupid fix for a stupid bug
 	size = getMapSize();					// get the level's size		// I am stupid i put level instead of map
 	drawLevel();							// draw the level
@@ -109,7 +111,9 @@ function nextLevel() {
 	}
 }
 level = levels[++lvl];		// get the first level
-document.getElementById("name").innerText = level.name;	// display the name of the level
+document.getElementById("name").innerText = level.name;					// display level info
+document.getElementById("author").innerText = level.author;				// 
+document.getElementById("description").innerText = level.description;	// ---
 setTimeout(function () {
 	if (getCookie("bestTime") == "")
 		setCookie("bestTime", 0);
