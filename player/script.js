@@ -28,15 +28,10 @@ var lc = lvlCanvas.getContext("2d");					// get their contexts
 														// ---
 
 started = false;
-document.onkeydown = (e) => {
-	keys[e.key] = true;
-	if (!started) {				// the game only begins once you press a button
+document.addEventListener("keydown", function(e) {
+	if (!started) 		// the game only begins once you press a button
 		start();
-	}
-}
-document.onkeyup = (e) => {
-	keys[e.key] = false;
-}
+});
 
 var speed = 1;								// how fast the game should run
 var ms = 0;									// the delay in miliseconds between each frame
@@ -58,7 +53,6 @@ var
 	},
 	gravity = 1;		// the gravity on the player (positive = down, negative = up)
 
-var keys = {};		// what keys are being pressed
 var buffer = true;		// so that we can be very nice to the player (all collisions excluding the one with green tiles give you a frame before they actually happen)
 var timer = 0;
 function setFps(v) {						// sets the framerate
@@ -114,18 +108,18 @@ function start() {
 }
 
 function onFrame() {
-	if (keys["w"] || keys["ArrowUp"]) {
+	if (input["w"] || input["ArrowUp"]) {
 		player.y -= move * Math.sign(gravity);
 	} else {
 		player.y += move * gravity;
 	}
-	if (keys["a"] || keys["ArrowLeft"]) {
+	if (input["a"] || input["ArrowLeft"]) {
 		player.x -= move;
 	}
-	if (keys["d"] || keys["ArrowRight"]) {
+	if (input["d"] || input["ArrowRight"]) {
 		player.x += move;
 	}
-	if (keys["r"]) {
+	if (input["r"]) {
 		reset();
 	}
 	pTile.x = Math.floor((player.x) / 16);						// calculate which tile the player is on
@@ -176,7 +170,11 @@ function onFrame() {
 	// pc.fillStyle = "#ff0000";									// debug stuff
 	// drawRect(pc, pTile.x * 16, pTile.y * 16, 16, 16, false);	// 		this fills the tile that the game thinks the player is on
 	pc.fillStyle = "#000000"
-	drawRect(pc, player.x % 512, player.y % 512, 8, 8);
+	drawImg(pc, // draw to the player canvas
+			sprites["timmivoq_" + Math.floor(timer * 4) % 2],	// get the sprite (changes 4 times a second)
+			player.x % 512,
+			player.y % 512,
+	16, 16);
 	
 	
 	console.log(ms);

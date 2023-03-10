@@ -29,6 +29,15 @@ function genData() {
 	data.description = toB64(data.description);
 	return btoa(JSON.stringify(data));
 }
+function loadData(src) {
+	var data = 
+			JSON.parse(atob(src));
+	level.map = data.map;
+	level.magic = data.magic;
+	level.name = fromB64(data.name);
+	level.author = fromB64(data.author);
+	level.description = fromB64(data.description);
+}
 function setCookie(cname, cvalue) {
 	document.cookie = cname + "=" + cvalue + ";path=/";
 }
@@ -60,6 +69,17 @@ function drawRect(c, x, y, w, h, center = true) {
 		c.fillRect(x - (w/2), y - (h/2), w, h);
 	else
 		c.fillRect(x, y, w, h);
+}
+function drawImg(c, img, x, y, w, h, center = true) {
+	var ratio = plrCanvas.width / 512;
+	x *= ratio;
+	y *= ratio;
+	w *= ratio;
+	h *= ratio;
+	if (center)
+		c.drawImage(img, x - (w/2), y - (h/2), w, h);
+	else
+		c.drawImage(img, x, y, w, h);
 }
 function getMapSize() {
 	var rows = level.map.length;
@@ -142,18 +162,34 @@ var level = {
 var url = window.location.href.split("?=")
 if (url.length > 1) {
 	try {
-		var data = 
-			JSON.parse(atob(url[1]));
-		level.name = fromB64(data.name);
-		level.author = fromB64(data.author);
-		level.description = fromB64(data.description);
+		loadData(url[1]);
 	} catch (exception) {window.alert("invalid level data")}
+}
+var sprites = {
+	"timmivoq_0": "/img/timmivoq0.png",
+	"timmivoq_1": "/img/timmivoq1.png"
+};
+for (i in sprites) {
+	var img = new Image();
+	img.src = sprites[i];
+	sprites[i] = img;
 }
 document.body.innerHTML += `
 <div id="lvlInfo">
 	<h1 id="name">${level.name || "Nameless"}</h1>
-	<h3 id="author">${level.author || "No Author"}</h3>
+	<h3>By <a id="author">${level.author || "No Author"}</a></h3>
 	<p id="description">${level.description || "No Description"}</p>
 </div>
 `;
 var size = getMapSize();
+var input = {};
+document.onkeydown = (e) => {
+	try { 
+		input[e.key]++;
+	} catch {
+		input[e.key] = 1;
+	}
+}
+document.onkeyup = (e) => {
+	input[e.key] = 0;
+}

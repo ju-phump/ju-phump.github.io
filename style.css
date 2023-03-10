@@ -78,11 +78,16 @@ div#lvlContainer {
 	transform: translateX(-50%);
 	overflow: visible;
 }
-#name {
-	text-align: right;
+#lvlInfo {
+	position: fixed;
+	right: 0%;
 	background: var(--bg-color);
 	z-index: 1000;
 	padding: 1%;
+	width: 20%;
+	height: 50%;
+	overflow-y: scroll;
+	border: 1px solid var(--fg-color);
 }
 .center {
 	position: fixed;
