@@ -143,6 +143,10 @@ function onFrame() {
 				gravity = -1;
 			else if (pTile.v == "4")
 				gravity = 1;
+			else if (pTile.v == "5")
+				for (i in input)
+					if (input[i] == 1)
+						reset();
 		} else
 			buffer = true;
 	} else if (buffer)
@@ -180,6 +184,9 @@ function onFrame() {
 	console.log(ms);
 	timer += ms;
 	timerEl.innerText = "Current Time: " + Math.floor(timer);
+	for (i in input)
+		if (input[i])
+			input[i]++;
 	if (started) 
 		setTimeout(onFrame, ms);
 }

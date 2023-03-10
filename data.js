@@ -113,7 +113,8 @@ var colours = [
 	"#000000",
 	"#00ff00",
 	"#ffff00",
-	"#00ffff"
+	"#00ffff",
+	"#ff0000"
 ];
 String.prototype.replaceAt = function(index, replacement) {
     return this.substring(0, index) + replacement + this.substring(index + replacement.length);
@@ -184,11 +185,8 @@ document.body.innerHTML += `
 var size = getMapSize();
 var input = {};
 document.onkeydown = (e) => {
-	try { 
-		input[e.key]++;
-	} catch {
+	if (!input[e.key])
 		input[e.key] = 1;
-	}
 }
 document.onkeyup = (e) => {
 	input[e.key] = 0;
