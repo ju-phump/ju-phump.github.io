@@ -40,6 +40,7 @@ function getList(request, callback) {
 
 document.body.innerHTML = `
 <h1>Juphump Community</h1>
+<a href="upload">Upload Level</a>
 <h4>Featured Levels</h4>
 <div id="featuredLevels">
 	<p>Loading Featured Levels...</p>
