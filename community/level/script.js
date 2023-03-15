@@ -40,8 +40,8 @@ var url = document.location.href.split("?id=");
 if (url.length > 1) {
 	id = url[1];
 }
-var level = {
-	"name": "...loading...",
-	"author": "...loading...",
-	"description": "...loading..."
-};
+document.getElementById("lvlInfo").innerHTML = `
+		<h1 id="name">...loading...</h1>
+		<h3>By <a id="author">...loading...</a></h3>
+		<p id="description">...loading...</p>
+ `;
