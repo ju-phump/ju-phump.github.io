@@ -5,7 +5,7 @@
  *
  * code by Dante Davis
  *     started: 2022/03/06 (YYYY/MM/DD)
- * last edited: 2022/03/08
+ * last edited: 2022/03/09
  */
 var levels = [
 	{
@@ -126,4 +126,4 @@ setTimeout(function () {
 	if (getCookie("bestTime") == "")
 		setCookie("bestTime", 0);
 	bestEl.innerText = "Best Time: " + getCookie("bestTime");
-}, 50);
+}, 100);
