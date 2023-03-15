@@ -17,7 +17,7 @@ ws.addEventListener('message', (event) => {
 	}
 	var data = 
 			JSON.parse(response);
-	level.map = data.map;
+	level.map = mapDecompress(data.map);
 	level.magic = data.magic;
 	level.name = fromB64(data.name);
 	level.author = fromB64(data.author);
