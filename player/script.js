@@ -92,8 +92,10 @@ function onFrame() {
 			};
 	}
 	if (input["x"] || input["."]) {
-		if (!inputBuffer[".x"])
+		if (!inputBuffer[".x"]) {
 			window.alert("practice mode is now " + (practice.active = !practice.active));
+			reset();
+		}
 		inputBuffer[".x"] = true;
 	} else if (inputBuffer[".x"]) {
 		inputBuffer[".x"] = false;
