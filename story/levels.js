@@ -126,4 +126,4 @@ setTimeout(function () {
 	if (getCookie("bestTime") == "")
 		setCookie("bestTime", 0);
 	bestEl.innerText = "Best Time: " + getCookie("bestTime");
-}, 100);
+}, 100)
