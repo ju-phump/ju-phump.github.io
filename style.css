@@ -1,0 +1,136 @@
+:root {
+	--bg-color: #ffffff;
+	--fg-color: #000000;
+}
+@font-face {
+	font-family: comicMono;
+	src: url(comicmono.ttf);
+}
+body {
+	background: var(--bg-color);
+	color: var(--fg-color);
+}
+* {
+	font-family: comicMono;
+	color: var(--fg-color);
+}
+canvas {
+	margin: 0px;
+	padding: 0px;
+}
+#plr {
+	position: fixed;
+	bottom: 5%;
+	left: 50%;
+	transform: translateX(-50%);
+}
+#hScroll {
+	position: fixed;
+	bottom: 1%;
+	left: 50%;
+	transform: translateX(-50%);
+}
+#vScroll {
+	position: fixed;
+	bottom: 45%;
+	right: 25%;
+	transform: translateX(50%) rotate(90deg);
+}
+/* stolen from w3schools! */
+.scroll {
+	-webkit-appearance: none;	/* Override default CSS styles */
+	appearance: none;
+	width: 40%; /* Full-width */
+	height: 12px; /* Specified height */
+	background: #ffffff; /* Grey background */
+	outline: none; /* Remove outline */
+	opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+	-webkit-transition: .2s; /* 0.2 seconds transition on hover */
+	transition: opacity .2s;
+	border: 1px solid var(--fg-color);
+}
+/* Mouse-over effects */
+.scroll:hover {
+	opacity: 1; /* Fully shown on mouse-over */
+}
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.scroll::-webkit-slider-thumb {
+	-webkit-appearance: none; /* Override default look */
+	appearance: none;
+	width: 24px; /* Set a specific slider handle width */
+	height: 24px; /* Slider handle height */
+	background: #000000; /* Green background */
+	cursor: pointer; /* Cursor on hover */
+}
+.scroll::-moz-range-thumb {
+	width: 24px; /* Set a specific slider handle width */
+	height: 24px; /* Slider handle height */
+	background: #000000; /* Green background */
+	cursor: pointer; /* Cursor on hover */
+}
+
+div#lvlContainer {
+	position: fixed;
+	bottom: 5%;
+	left: 50%;
+	margin: 0px;
+	padding: 0px;
+	transform: translateX(-50%);
+	overflow: visible;
+}
+#lvlInfo {
+	position: fixed;
+	right: 0%;
+	background: var(--bg-color);
+	z-index: 1000;
+	padding: 1%;
+	width: 20%;
+	height: 50%;
+	overflow-y: scroll;
+	border: 1px solid var(--fg-color);
+}
+.center {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+.border {
+	border: 1px solid var(--fg-color);
+}
+*[visible="false"] {
+	display: none;
+}
+#text {
+	border: 1px solid var(--fg-color);
+	background: var(--bg-color);
+	padding: 12px;
+}
+#menu {
+	position: fixed;
+	top: 0%;
+	left: 0%;
+	width: 20%;
+	padding: 1%;
+	height: 100%;
+	overflow-y: scroll;
+	background: var(--bg-color);
+	border: 1px solid var(--fg-color);
+}
+#menu[transparent=true] {
+	position: fixed;
+	top: 0%;
+	left: 0%;
+	width: 20%;
+	padding: 1%;
+	height: 100%;
+	overflow-y: scroll;
+	background: none;
+	border: none;
+}
+*[visible=false] {
+	display: hidden;
+}
+.dotted {
+	border: 1px dotted var(--fg-color);
+}
