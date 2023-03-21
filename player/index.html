@@ -14,7 +14,18 @@
 	<body>
 		<script src="/data.js"></script>
 		<script src="script.js"></script>
-		<script>urlLevelLoad();loadPlayer();</script>
+		<script>
+			urlLevelLoad();
+			loadPlayer();
+			timerEl = document.createElement("p");
+			timerEl.innerText = "Current Time: 0";
+			timerEl.id = "timer";
+			document.body.appendChild(timerEl);
+			bestEl = document.createElement("p");
+			bestEl.innerText = "stats do not save on local levels";
+			bestEl.id = "bestTime";
+			document.body.appendChild(bestEl);
+		</script>
 	</body>
 
 </html>

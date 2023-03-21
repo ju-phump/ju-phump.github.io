@@ -73,7 +73,7 @@ var levels = [
 		"magic": {}
 	},
 	{
-		"name": "10 - Red?",
+		"name": "8 - Red?",
 		"author": "Nurdle",
 		"description": "Hold your right arrow key!",
 		"startPos": [0,0],
@@ -112,18 +112,32 @@ function nextLevel() {
 	if (lvl == 0)							// reset the timer if the player completed all the levels
 		timer = 0;
 	if (lvl == levels.length - 1) {			// if you reach the last level then it will record your time if you beat your record
-		if (timer < getCookie("bestTime") || getCookie("bestTime") == 0) 
-			setCookie("bestTime", Math.floor(timer));
-		bestEl.innerText = "Best Time: " + getCookie("bestTime");
-		document.getElementById("name").innerText = `U Win`;		// "Level (insert number here)" isn't a very good name for a level that just contains the text "u win"
+		if (timer < cookie.bestTime || cookie.bestTime == "N/A") 
+			cookie.bestTime = Math.floor(timer);
+		bestEl.innerText = "Best Time: " + cookie.bestTime;
+		cookie.completed();
 	}
+	practice.checkpoint = {
+		"x": level.startPos[0] * 512 + 256,
+		"y": level.startPos[1] * 512 + 256,
+		"gravity": 1
+	};
 }
 level = levels[++lvl];		// get the first level
 document.getElementById("name").innerText = level.name;					// display level info
 document.getElementById("author").innerText = level.author;				// 
 document.getElementById("description").innerText = level.description;	// ---
+
+timerEl = document.createElement("p");
+timerEl.innerText = "Current Time: 0";
+timerEl.id = "timer";
+document.body.appendChild(timerEl);
+bestEl = document.createElement("p");
+bestEl.innerText = "Best Time: N/A";
+bestEl.id = "bestTime";
+document.body.appendChild(bestEl);
+
 setTimeout(function () {
-	if (getCookie("bestTime") == "")
-		setCookie("bestTime", 0);
-	bestEl.innerText = "Best Time: " + getCookie("bestTime");
+	cookie = getLevelCookie("story");
+	bestEl.innerText = "Best Time: " + cookie.bestTime;
 }, 100);

@@ -24,6 +24,9 @@ canvas {
 	left: 50%;
 	transform: translateX(-50%);
 }
+#list {
+	margin: 16px;
+}
 #hScroll {
 	position: fixed;
 	bottom: 1%;
@@ -88,6 +91,7 @@ div#lvlContainer {
 	height: 50%;
 	overflow-y: scroll;
 	border: 1px solid var(--fg-color);
+	margin: 0px;
 }
 .center {
 	position: fixed;
@@ -116,6 +120,7 @@ div#lvlContainer {
 	overflow-y: scroll;
 	background: var(--bg-color);
 	border: 1px solid var(--fg-color);
+	margin: 0px;
 }
 #menu[transparent=true] {
 	position: fixed;
@@ -133,4 +138,8 @@ div#lvlContainer {
 }
 .dotted {
 	border: 1px dotted var(--fg-color);
+}
+div {
+	margin: 8px;
+	padding: 8px;
 }

@@ -7,6 +7,19 @@
  *     started: 2022/03/04 (YYYY/MM/DD)
  * last edited: 2022/03/09
  */
+function setFps(v) {					// sets the framerate
+	ms = 1000/v;
+	move = (128 * speed) * (ms / 1000);
+}
+function setSpeed(v) {					// sets the speed of the game (maintains fps and changes movement)
+	speed = v;
+	move = (128 * speed) * (ms / 1000);
+}
+function setFrameSpeed(fps, spd) {		// sets the speed of the game (maintains movement and changes fps)
+	ms = 1000/fps;
+	move = (128 * speed) * (ms / 1000);
+	ms /= spd;
+}
 var pc, lc;
 var practice = {
 	"active": false,
@@ -158,7 +171,7 @@ function onFrame() {
 	// drawRect(pc, pTile.x * 16, pTile.y * 16, 16, 16, false);	// 		this fills the tile that the game thinks the player is on
 	pc.fillStyle = "#000000"
 	drawImg(pc, // draw to the player canvas
-			sprites["timmivoq_" + Math.floor(timer * 4) % 2],	// get the sprite (changes 4 times a second)
+			sprites["timmivoq_" + (Math.floor(timer / 10) % 2)],	// get the sprite (changes 4 times a second)
 			player.x % 512,
 			player.y % 512,
 	16, 16);
@@ -229,19 +242,6 @@ function loadPlayer() {
 		if (!started) 		// the game only begins once you press a button
 			start();
 	});
-	function setFps(v) {						// sets the framerate
-		ms = 1000/v;
-		move = (128 * speed) * (ms / 1000);
-	}
-	function setSpeed(v) {					// sets the speed of the game (maintains fps and changes movement)
-		speed = v;
-		move = (128 * speed) * (ms / 1000);
-	}
-	function setFrameSpeed(fps, spd) {		// sets the speed of the game (maintains movement and changes fps)
-		ms = 1000/fps;
-		move = (128 * speed) * (ms / 1000);
-		ms /= spd;
-	}
 	setSpeed(1);
 	setFps(30);
 	var txt = document.createElement("h4");
@@ -249,14 +249,6 @@ function loadPlayer() {
 	txt.className = "center";
 	txt.id = "text";
 	document.body.appendChild(txt);
-	timerEl = document.createElement("p");
-	timerEl.innerText = "Current Time: 0";
-	timerEl.id = "timer";
-	document.body.appendChild(timerEl);
-	bestEl = document.createElement("p");
-	bestEl.innerText = "Best Time: " + getCookie("bestTime") || "0 ms";
-	bestEl.id = "timer";
-	document.body.appendChild(bestEl);
 	cam.x = Math.floor(player.x / 512);
 	cam.y = Math.floor(player.y / 512);
 	lvlCanvas.style.transform = "translate(" + -(cam.x * plrCanvas.width) + "px,  " + -(cam.y * plrCanvas.width) + "px)";
