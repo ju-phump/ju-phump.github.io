@@ -29,6 +29,7 @@ var practice = {
 		"gravity": 1
 	}
 };
+var deaths = 0;
 var inputBuffer = {};
 var bestEl, timerEl;
 function unwin() {
@@ -48,6 +49,16 @@ function start() {
 	document.getElementById("text").setAttribute("visible", false);
 	document.getElementById("lvlInfo").setAttribute("visible", false);
 	console.log(started);
+}
+function die() {
+	deaths++;
+	deathsEl.innerText = "Death: " + deaths;
+	if (cookie.totalDeaths) {
+		cookie.totalDeaths = cookie.totalDeaths + 1;
+	} else {
+		cookie.totalDeaths = deaths;
+	}
+	reset();
 }
 function reset() {
 	if (practice.active) {
@@ -129,7 +140,7 @@ function onFrame() {
 	} else if (pTile.v != 0) {
 		if (buffer) {
 			if (pTile.v == "1")
-				reset();
+				die();
 			else if (pTile.v == "3")
 				gravity = -1;
 			else if (pTile.v == "4")
