@@ -5,7 +5,7 @@
  *
  * code by Dante Davis
  *     started: 2022/03/05 (YYYY/MM/DD)
- * last edited: 2022/03/15
+ * last edited: 2022/03/13
  */
 
 /* compression stuff */
@@ -72,7 +72,6 @@ function mapCompress(data) {
 	for (var i = 0; i < len; i) {
 		var row = compressed[i];
 		var amt = 0;
-		console.log(row);
 		while (i < len && row == compressed[++i])
 			amt++;
 		if (amt > 0)	// if multiple rows are in the same place then compress them
@@ -80,7 +79,6 @@ function mapCompress(data) {
 		else
 			final += row + "\n";
 	}
-	console.log(final);
 	return final;
 }
 function mapDecompress(final) {
@@ -152,7 +150,7 @@ function genData() {
 function loadData(src) {
 	var data = 
 			JSON.parse(atob(src));
-	level.map = mapDecompress(data.map);	// decompress map (should work with older levels)
+	level.map = mapDecompress(data.map);	// decompress map (should work with uncompressed levels aswell)
 	level.magic = data.magic;
 	level.name = fromB64(data.name);
 	level.author = fromB64(data.author);
@@ -176,6 +174,58 @@ function getCookie(cname) {
 		}
 	}
 	return "";
+}
+function getLevelCookie(name) {
+	const cname = name;
+	function getC(name) {
+		var c = getCookie(name);
+		let defaultVal = btoa(`{"bestTime": "N/A", "completions": 0}`);
+		if (c == "") 
+			setCookie(name, defaultVal);
+		try {
+			c = atob(c);
+			c = JSON.parse(c);
+		} catch {
+			setCookie(name, defaultVal);
+			c = {"bestTime": "N/A", "completions": 0};
+		}
+		console.log(c);
+		return c;
+	}
+	return new (class LvlCookie {
+		#bestTime = "N/A";
+		#completions = 0;
+		constructor(name) {
+			var c = getC(name);
+			this.cname = name;
+			this.#bestTime = c.bestTime;
+			this.#completions = c.completions;
+		}
+		set bestTime (v) {
+			var c = getC(this.cname);
+			c.bestTime = v;
+			setCookie(this.cname, btoa(JSON.stringify(c)));
+			this.#bestTime = v;
+		}
+		set completions (v) {
+			var c = getC(this.cname);
+			c.completions = v;
+			setCookie(this.cname, btoa(JSON.stringify(c)));
+			this.#completions = v;
+		}
+		get bestTime () {
+			return this.#bestTime;
+		}
+		get completions () {
+			return this.#completions;
+		}
+		completed() {
+			var c = getC(this.cname);
+			c.completions++;
+			setCookie(this.cname, btoa(JSON.stringify(c)));
+			this.#completions = c.completions;
+		}
+	})(name);
 }
 function flush(c) {
 	c.clearRect(0, 0, window.innerWidth, window.innerHeight);
