@@ -7,10 +7,31 @@
  *     started: 2022/03/09 (YYYY/MM/DD)
  * last edited: 2022/03/10
  */
+const ws = new WebSocket('wss://server.4j89.repl.co');
 var lvl = 0;
 var levels = [];
-var sv = new Server("wss://server.4j89.repl.co");
 
+ws.addEventListener('message', (event) => {
+    var response = event.data;
+	if (response == "series not found" || response == "server error" || response.startsWith("invalid")) {
+		window.alert(response);
+		return;
+	}
+	cookie = getLevelCookie("series" + id);
+	bestEl.innerText = "Best Time: " + cookie.bestTime;
+	var data = 
+			JSON.parse(response);
+	var levels = data.content;
+	series.name = fromB64(data.name);
+	series.author = fromB64(data.author);
+	series.description = fromB64(data.description);
+	loadPlayer();
+	nextLevel();
+});
+ws.addEventListener('open', (event) => {
+	if (id != -1)
+		ws.send("series:" + id);
+});
 var id = -1;
 var url = document.location.href.split("?id=");
 if (url.length > 1) {
@@ -61,11 +82,3 @@ function nextLevel() {
 		"gravity": 1
 	};
 }
-sv.getSeries(id, function (data) {
-	levels = data.content;
-	series.name = fromB64(data.name);
-	series.author = fromB64(data.author);
-	series.description = fromB64(data.description);
-	loadPlayer();
-	nextLevel();
-});

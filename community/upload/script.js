@@ -32,10 +32,6 @@ function upload(data) {
 			window.alert("unknown server response");
 		}
     }
-	ws.onclose = function (e) {
-		if (e.code == 1006)
-			window.alert("server unreachable");
-	}
     return ws;
 }
 

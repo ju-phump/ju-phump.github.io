@@ -179,7 +179,7 @@ function getLevelCookie(name) {
 	const cname = name;
 	function getC(name) {
 		var c = getCookie(name);
-		let defaultVal = btoa(`{"bestTime": "N/A", "completions": 0, "bestDeaths": "N/A", "totalDeaths": 0}`);
+		let defaultVal = btoa(`{"bestTime": "N/A", "completions": 0}`);
 		if (c == "") 
 			setCookie(name, defaultVal);
 		try {
@@ -187,7 +187,7 @@ function getLevelCookie(name) {
 			c = JSON.parse(c);
 		} catch {
 			setCookie(name, defaultVal);
-			c = JSON.parse(defaultVal);
+			c = {"bestTime": "N/A", "completions": 0};
 		}
 		console.log(c);
 		return c;
@@ -195,15 +195,11 @@ function getLevelCookie(name) {
 	return new (class LvlCookie {
 		#bestTime = "N/A";
 		#completions = 0;
-		#bestDeaths = 0;
-		#totalDeaths = 0;
 		constructor(name) {
 			var c = getC(name);
 			this.cname = name;
 			this.#bestTime = c.bestTime;
 			this.#completions = c.completions;
-			this.#bestDeaths = c.bestDeaths;
-			this.#totalDeaths = c.totalDeaths;
 		}
 		set bestTime (v) {
 			var c = getC(this.cname);
@@ -217,29 +213,11 @@ function getLevelCookie(name) {
 			setCookie(this.cname, btoa(JSON.stringify(c)));
 			this.#completions = v;
 		}
-		set bestDeaths (v) {
-			var c = getC(this.cname);
-			c.bestDeaths = v;
-			setCookie(this.cname, btoa(JSON.stringify(c)));
-			this.#bestDeaths = v;
-		}
-		set totalDeaths (v) {
-			var c = getC(this.cname);
-			c.totalDeaths = v;
-			setCookie(this.cname, btoa(JSON.stringify(c)));
-			this.#totalDeaths = v;
-		}
 		get bestTime () {
 			return this.#bestTime;
 		}
 		get completions () {
 			return this.#completions;
-		}
-		get bestDeaths () {
-			return this.#bestDeaths;
-		}
-		get totalDeaths () {
-			return this.#totalDeaths;
 		}
 		completed() {
 			var c = getC(this.cname);
@@ -414,120 +392,5 @@ function addMouse() {
 	}
 	plrCanvas.onmouseup = (e) => {
 		mouse.down = false;
-	}
-}
-class Server {
-	constructor(location) {
-		this.location = location;
-	}
-	getList(request, callback) {
-		var ws = new WebSocket(this.location);
-		var c = callback, r = request;
-		ws.onmessage = function (e) {
-			var response = e.data;
-			if (response == "list not found" || response == "server error") {
-				window.alert(response);
-				return;
-			}
-			console.log(response);
-			var data = 
-					JSON.parse(response);
-			c(data);
-		};
-		ws.onopen = function (e) {
-			ws.send(`list:${r}`);
-		};
-		return ws;
-	}
-	getLevel(id, callback) {
-		var c = callback;
-		ws.onmessage = function (e) {
-		    var response = e.data;
-			if (response == "level not found" || response == "server error") {
-				window.alert(response);
-				return;
-			}
-			cookie = getLevelCookie("level" + id);
-			bestDeathsEl.innerText = "Personal Death Record: " + cookie.bestDeaths;
-			bestEl.innerText = "Best Time: " + cookie.bestTime;
-			var data = 
-					JSON.parse(response);
-			var level = {};
-			level.map = mapDecompress(data.map);
-			level.magic = data.magic;
-			level.name = fromB64(data.name);
-			level.author = fromB64(data.author);
-			level.description = fromB64(data.description);
-			level.startPos = data.startPos;
-			c(level);
-		};
-		var id = id;
-		ws.onopen = function (e) {
-			if (id != -1)
-				ws.send("level:" + id);
-		};
-		ws.onclose = function (e) {
-			if (e.code == 1006)
-				window.alert("server unreachable");
-		};
-		return ws;
-	}
-	getSeries(id, callback) {
-		var c = callback;
-		var id = id;
-		ws.onmessage = function (e) {
-		    var response = event.data;
-			if (response == "series not found" || response == "server error" || response.startsWith("invalid")) {
-				window.alert(response);
-				return;
-			}
-			cookie = getLevelCookie("series" + id);
-			bestDeathsEl.innerText = "Personal Death Record: " + cookie.bestDeaths;
-			bestEl.innerText = "Best Time: " + cookie.bestTime;
-			var data = 
-					JSON.parse(response);
-			c(data);
-		};
-		ws.onopen = function (e) {
-			if (id != -1)
-				ws.send("series:" + id);
-		};
-		ws.onclose = function (e) {
-			if (e.code == 1006)
-				window.alert("server unreachable");
-		};
-		return ws;
-	}
-	uploadLevel(data) {
-	    var ws = new WebSocket(this.location);
-	    ws.onopen = function (e) {
-	        ws.send("uploadlvl:" + data);
-	    };
-	    ws.onmessage = function (e) {
-	        var msg = e.data;
-			if (msg == "server overloaded") {
-				window.alert("upload failed: server is overloaded");
-			} else if (msg == "invalid level data") {
-				window.alert("upload failed: invalid level data");
-			} else if (msg.endsWith("in the queue")) {
-				document.body.innerHTML = `
-					<center>
-						<h1>Upload a Level to the Servers</h1>	
-					  	<h3>Success!</h3>
-		   				<p>you are ${msg}</p>
-					</center>
-					`;
-				window.alert("upload success, you are " + msg);
-			} else if (msg == "server error") {
-				window.alert("upload failed: server error");
-			} else {
-				window.alert("unknown server response");
-			}
-	    };
-		ws.onclose = function (e) {
-			if (e.code == 1006)
-				window.alert("server unreachable");
-		};
-	    return ws;
 	}
 }

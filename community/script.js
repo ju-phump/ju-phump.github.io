@@ -6,7 +6,37 @@
  *     started: 2022/03/08 (YYYY/MM/DD)
  * last edited: 2022/03/12
  */
-var sv = new Server("wss://server.4j89.repl.co");
+function upload(data) {
+    var ws = new WebSocket("wss://server.4j89.repl.co/");
+    ws.onopen = function (e) {
+        ws.send("upload:" + data);
+    }
+    ws.onmessage = function (e) {
+        console.log(e.data);
+    }
+    return ws;
+}
+
+function getList(request, callback) {
+	var ws = new WebSocket('wss://server.4j89.repl.co');
+	var c = callback, r = request;
+	ws.onmessage = function (event) {
+		var response = event.data;
+		if (response == "list not found" || response == "server error") {
+			window.alert(response);
+			return;
+		}
+		console.log(response);
+		var data = 
+				JSON.parse(response);
+		c(data);
+	};
+	ws.onopen = function () {
+		ws.send(`list:${r}`);
+	};
+	
+	return ws;
+}
 
 document.body.innerHTML = `
 <h1>Juphump Community</h1>
@@ -22,7 +52,7 @@ document.body.innerHTML = `
 `;
 
 
-sv.getList("featured,0-10", data => {						// get the featured levels
+getList("featured,0-10", data => {						// get the featured levels
 	var el = document.getElementById("featuredLevels"); // get element
 	el.className = "border";
 	var lvls = data.lvls;
@@ -39,13 +69,9 @@ sv.getList("featured,0-10", data => {						// get the featured levels
 			`;
 	if (i == 0) 	// if there aren't any featured levels, the variable "i" will equal 0.
 		el.innerHTML = "<p>No Levels To Show</p>";
-}).onclose = function (e) {
-	var el = document.getElementById("featuredLevels"); // get element
-	if (e.code == 1006)
-		el.innerHTML = "<p>Server Unavailable</p>";
-};
+});
 
-sv.getList("recent,0-10", data => {						// get the recent levels
+getList("recent,0-10", data => {						// get the recent levels
 	var el = document.getElementById("recentLevels"); 	// get element
 	el.className = "border";
 	var lvls = data.lvls;
@@ -57,8 +83,4 @@ sv.getList("recent,0-10", data => {						// get the recent levels
 		`;
 	if (i == 0) 	// if there aren't any recent levels, the variable "i" will equal 0.
 		el.innerHTML = "<p>No Levels To Show</p>";
-}).onclose = function (e) {
-	var el = document.getElementById("recentLevels"); // get element
-	if (e.code == 1006)
-		el.innerHTML = "<p>Server Unavailable</p>";
-};
+});
