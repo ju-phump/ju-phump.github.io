@@ -138,13 +138,31 @@ function fromB64(encoded) {
 }
 
 /* Generate Level Data */
-	/* used to generate a base64 string that can be used to encode the data */
+	/* used to generate a base64 string that can be used to encode level data */
 function genData() {
 	var data = Object.assign({}, level);		// create a copy of the level data (to avoid modifying the original data)
 	data.name = toB64(data.name);
 	data.author = toB64(data.author);
 	data.description = toB64(data.description);
 	data.map = mapCompress(data.map);				// compress the map data, removes garbage and makes the overall size way smaller
+	return btoa(JSON.stringify(data));
+}
+/* Generate Series Data */
+	/* used to generate a base64 string that can be used to encode series data */
+function genSeriesData() {
+	var data = Object.assign({}, series);		// create a copy of the series data (to avoid modifying the original data)
+	var len = data.content.length;
+	var lvls = data.content;
+	for (var i = 0; i < len; i++) {
+		var o = cont[i];
+		data.content[i].name = toB64(o.name);
+		data.content[i].author = toB64(o.author);
+		data.content[i].description = toB64(o.description);
+		data.content[i].map = mapCompress(o.map);				// compress the map data, removes garbage and makes the overall size way smaller
+	}
+	data.name = toB64(data.name);
+	data.author = toB64(data.author);
+	data.description = toB64(data.description);
 	return btoa(JSON.stringify(data));
 }
 function loadData(src) {
@@ -179,14 +197,14 @@ function getLevelCookie(name) {
 	const cname = name;
 	function getC(name) {
 		var c = getCookie(name);
-		let defaultVal = btoa(`{"bestTime": "N/A", "completions": 0, "bestDeaths": "N/A", "totalDeaths": 0}`);
+		let defaultVal = `{"bestTime": "N/A", "completions": 0, "bestDeaths": "N/A", "totalDeaths": 0}`;
 		if (c == "") 
 			setCookie(name, defaultVal);
 		try {
 			c = atob(c);
 			c = JSON.parse(c);
 		} catch {
-			setCookie(name, defaultVal);
+			setCookie(name, btoa(defaultVal));
 			c = JSON.parse(defaultVal);
 		}
 		console.log(c);
@@ -195,7 +213,7 @@ function getLevelCookie(name) {
 	return new (class LvlCookie {
 		#bestTime = "N/A";
 		#completions = 0;
-		#bestDeaths = 0;
+		#bestDeaths = "N/A";
 		#totalDeaths = 0;
 		constructor(name) {
 			var c = getC(name);
@@ -312,47 +330,54 @@ var colours = [
 String.prototype.replaceAt = function(index, replacement) {
     return this.substring(0, index) + replacement + this.substring(index + replacement.length);
 }
-var level = {
-	"name": "",
-	"author": "",
-	"description": "",
-	"startPos": [0,0],
-	"map": [
-		"11111111111111111111111111111111",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"10000000000000000000000000000001",
-		"11111111111111111111111111111111"
-	],
-	"magic": {}
+Array.prototype.insert = function ( index, ...items ) {
+    this.splice( index, 0, ...items );
+	return this;
 };
+createLevel = function () {
+	return {
+		"name": "",
+		"author": "",
+		"description": "",
+		"startPos": [0,0],
+		"map": [
+			"11111111111111111111111111111111",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"10000000000000000000000000000001",
+			"11111111111111111111111111111111"
+		],
+		"magic": {}
+	}
+};
+var level = createLevel();
 function urlLevelLoad() {
 	var url = window.location.href.split("?=")
 	if (url.length > 1) {
@@ -416,7 +441,7 @@ function addMouse() {
 		mouse.down = false;
 	}
 }
-class Server {
+Server = class {
 	constructor(location) {
 		this.location = location;
 	}
@@ -440,6 +465,7 @@ class Server {
 		return ws;
 	}
 	getLevel(id, callback) {
+		var ws = new WebSocket(this.location);
 		var c = callback;
 		ws.onmessage = function (e) {
 		    var response = e.data;
@@ -448,12 +474,11 @@ class Server {
 				return;
 			}
 			cookie = getLevelCookie("level" + id);
-			bestDeathsEl.innerText = "Personal Death Record: " + cookie.bestDeaths;
-			bestEl.innerText = "Best Time: " + cookie.bestTime;
 			var data = 
 					JSON.parse(response);
 			var level = {};
-			level.map = mapDecompress(data.map);
+			console.log(data);
+			level.map = mapDecompress(data.map.join("\n"));
 			level.magic = data.magic;
 			level.name = fromB64(data.name);
 			level.author = fromB64(data.author);
@@ -465,6 +490,7 @@ class Server {
 		ws.onopen = function (e) {
 			if (id != -1)
 				ws.send("level:" + id);
+			console.log("entering");
 		};
 		ws.onclose = function (e) {
 			if (e.code == 1006)
@@ -483,7 +509,7 @@ class Server {
 			}
 			cookie = getLevelCookie("series" + id);
 			bestDeathsEl.innerText = "Personal Death Record: " + cookie.bestDeaths;
-			bestEl.innerText = "Best Time: " + cookie.bestTime;
+			bestTimeEl.innerText = "Best Time: " + cookie.bestTime;
 			var data = 
 					JSON.parse(response);
 			c(data);
@@ -531,3 +557,13 @@ class Server {
 	    return ws;
 	}
 }
+
+$ = {
+	"get": function (query) {
+		return document.querySelector(query);
+	},
+	"all": function (query) {
+		return document.querySelectorAll(query);
+	}
+};
+var cookie = null;

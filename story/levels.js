@@ -114,8 +114,8 @@ function nextLevel() {
 	if (lvl == levels.length - 1) {			// if you reach the last level then it will record your time if you beat your record
 		if (timer < cookie.bestTime || cookie.bestTime == "N/A") 
 			cookie.bestTime = Math.floor(timer);
-		if (Deaths < cookie.bestDeaths || cookie.bestDeaths == "N/A") 
-			cookie.bestDeaths = Deaths;
+		if (deaths < cookie.bestDeaths || cookie.bestDeaths == "N/A") 
+			cookie.bestDeaths = deaths;
 		bestDeathsEl.innerText = "Personal Death Record: " + cookie.bestDeaths;
 		bestTimeEl.innerText = "Best Time: " + cookie.bestTime;
 		cookie.completed();
@@ -130,23 +130,6 @@ level = levels[++lvl];		// get the first level
 document.getElementById("name").innerText = level.name;					// display level info
 document.getElementById("author").innerText = level.author;				// 
 document.getElementById("description").innerText = level.description;	// ---
-
-timerEl = document.createElement("p");
-timerEl.innerText = "Current Time: 0";
-timerEl.id = "timer";
-document.body.appendChild(timerEl);
-bestTimeEl = document.createElement("p");
-bestTimeEl.innerText = "Best Time: N/A";
-bestTimeEl.id = "bestTime";
-document.body.appendChild(bestTimeEl);
-deathsEl = document.createElement("p");
-deathsEl.innerText = "Deaths: 0";
-deathsEl.id = "Deaths";
-document.body.appendChild(deathsEl);
-bestDeathsEl = document.createElement("p");
-bestDeathsEl.innerText = "Personal Death Record: N/A";
-bestDeathsEl.id = "bestDeaths";
-document.body.appendChild(bestDeathsEl);
 
 setTimeout(function () {
 	cookie = getLevelCookie("story");

@@ -4,9 +4,9 @@
  *
  * code by Dante Davis
  *     started: 2022/03/08 (YYYY/MM/DD)
- * last edited: 2022/03/12
+ * last edited: 2022/03/23
  */
-var sv = new Server("wss://server.4j89.repl.co");
+var sv = new Server(SERVER_LOC);
 
 document.body.innerHTML = `
 <h1>Juphump Community</h1>

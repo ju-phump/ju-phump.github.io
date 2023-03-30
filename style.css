@@ -83,15 +83,16 @@ div#lvlContainer {
 }
 #lvlInfo {
 	position: fixed;
+	top: 0%;
 	right: 0%;
 	background: var(--bg-color);
 	z-index: 1000;
-	padding: 1%;
 	width: 20%;
 	height: 50%;
 	overflow-y: scroll;
 	border: 1px solid var(--fg-color);
-	margin: 0px;
+	padding: 1%;
+	margin: 0%;
 }
 .center {
 	position: fixed;
@@ -127,7 +128,6 @@ div#lvlContainer {
 	top: 0%;
 	left: 0%;
 	width: 20%;
-	padding: 1%;
 	height: 100%;
 	overflow-y: scroll;
 	background: none;
@@ -142,4 +142,21 @@ div#lvlContainer {
 div {
 	margin: 8px;
 	padding: 8px;
+}
+#seriesMenu {
+	position: fixed;
+	bottom: 0%;
+	right: 0%;
+	width: 20%;
+	padding: 1%;
+	height: 50%;
+	overflow-y: scroll;
+	background: var(--bg-color);
+	border: 1px solid var(--fg-color);
+	margin: 0px;
+}
+#seriesMenu[transparent=true] {
+	overflow-y: scroll;
+	background: none;
+	border: none;
 }
