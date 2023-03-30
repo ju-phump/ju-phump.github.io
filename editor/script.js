@@ -8,7 +8,10 @@
  * last edited: 2022/03/09
  */
 var pc, lc;
+var series = [createLevel()];
+var currLvl = 0;
 function loadEditor() {
+	level = series[0];
 	lvlContainer = document.createElement("div")		// container for the level canvas
 	plrCanvas = document.createElement("canvas");		// the canvas where the player is drawn
 	lvlCanvas = document.createElement("canvas");		// the canvas where the level is drawn
@@ -30,7 +33,7 @@ function loadEditor() {
 	pc = plrCanvas.getContext("2d");						// 
 	lc = lvlCanvas.getContext("2d");						// get their contexts
 															// ---
-	addMouse();					// adds mouse functionality
+	addMouse();									// adds mouse functionality
 	var item = 0;								// the tile that the player has selected
 	var speed = 1;								// how fast the game should run
 	var ms = 0;									// the delay in miliseconds between each frame
@@ -159,13 +162,13 @@ function loadEditor() {
 	`;
 	document.body.appendChild(menu);
 	drawLevel();
-	document.getElementById("exportButton").onclick = (e) => {
-		document.getElementById("exportData").innerText = genData();
+	$.get("#exportButton").onclick = (e) => {
+		$.get("#exportData").innerText = genData();
 	};
-	document.getElementById("exportMapButton").onclick = (e) => {
-		document.getElementById("exportMapData").innerText = btoa(level.map.join('\n'));
+	$.get("#exportMapButton").onclick = (e) => {
+		$.get("#exportMapData").innerText = btoa(level.map.join('\n'));
 	};
-	document.getElementById("importMapButton").onclick = (e) => {
+	$.get("#importMapButton").onclick = (e) => {
 		try {
 			level.map = atob(document.getElementById('importMapData').value).split('\n');
 			size = getMapSize();
@@ -174,44 +177,44 @@ function loadEditor() {
 			window.alert("Invalid Map Data");
 		}
 	};
-	document.getElementById("importFileData").oninput = function () {
+	$.get("#importFileData").oninput = function () {
 		var file = this.files[0];
 		file.text()
 			.then((data) => {
 				window.location.href = 'https://ju-phump.4j89.repl.co/editor/?=' + data;
 			});
 	}
-	document.getElementById("downloadButton").onclick = function () {
-		var out = document.getElementById("downloadLink"), name = level.name.replace(/[^0-9A-z]/g, "_") + ".b64";
+	$.get("#downloadButton").onclick = function () {
+		var out = $.get("#downloadLink"), name = level.name.replace(/[^0-9A-z]/g, "_") + ".b64";
 		out.setAttribute('href', 'data:text/plain,' + genData());
 		out.setAttribute("download", name);
 		out.innerText = name;
 	}
-	document.getElementById("toggleButton").onclick = function () {
-		var newVal = document.getElementById("menuContents").getAttribute("visible") == "false";
-		document.getElementById("menuContents").setAttribute("visible", newVal);
-		document.getElementById("menu").setAttribute("transparent", !newVal);
+	$.get("#toggleButton").onclick = function () {
+		var newVal = $.get("#menuContents").getAttribute("visible") == "false";
+		$.get("#menuContents").setAttribute("visible", newVal);
+		$.get("#menu").setAttribute("transparent", !newVal);
 		if (newVal)
-			document.getElementById("toggleButton").innerText = "hide";
+			$.get("#toggleButton").innerText = "hide";
 		else
-			document.getElementById("toggleButton").innerText = "show";
+			$.get("#toggleButton").innerText = "show";
 	}
 	
 	
 	lvlContainer.style.width =
 		lvlContainer.style.height = Math.min(innerWidth, innerHeight) * 0.8 + "px";
 	
-	document.getElementById("name").setAttribute("contenteditable", "plaintext-only");
-	document.getElementById("name").addEventListener("input", function() {
-		level.name = document.getElementById("name").innerText;
+	$.get("#name").setAttribute("contenteditable", "true");
+	$.get("#name").addEventListener("input", function() {
+		level.name = $.get("#name").innerText;
 	}, false);
-	document.getElementById("author").setAttribute("contenteditable", "plaintext-only");
-	document.getElementById("author").addEventListener("input", function() {
-		level.author = document.getElementById("author").innerText;
+	$.get("#author").setAttribute("contenteditable", "true");
+	$.get("#author").addEventListener("input", function() {
+		level.author = $.get("#author").innerText;
 	}, false);
-	document.getElementById("description").setAttribute("contenteditable", "plaintext-only");
-	document.getElementById("description").addEventListener("input", function() {
-		level.description = document.getElementById("description").innerText;
+	$.get("#description").setAttribute("contenteditable", "true");
+	$.get("#description").addEventListener("input", function() {
+		level.description = $.get("#description").innerText;
 	}, false);
 	
 	var cam = {x:0,y:0}
@@ -230,7 +233,7 @@ function loadEditor() {
 	var vScroll = document.createElement("input");
 	vScroll.type = "range";
 	vScroll.min = "0";
-	vScroll.max = "10"; 
+	vScroll.max = "10";
 	vScroll.value = "0";
 	vScroll.id = "vScroll";
 	vScroll.className = "scroll";
@@ -240,4 +243,89 @@ function loadEditor() {
 	}
 	
 	document.body.appendChild(vScroll);
+
+	var seriesMenu = document.createElement("div");
+	seriesMenu.id = "seriesMenu";
+	seriesMenu.innerHTML = `
+ 		<h4>Series Settings</h4>
+   		<p>Name: <a id="seriesName">Nameless</a></p>
+	 	<p>Author: <a id="seriesAuthor">Unknown</a></p>
+	 	<p>Description: <a id="seriesDesc">No Description</a></p>
+ 		<button id="prevLvl">&lt;</button> <a id="levelText">Level 1/1</a> <button id="nextLvl">&gt;</button><br>
+   		<button id="addLvl">Add</button>
+   		<button id="delLvl">Delete</button>
+		<button id="exportSeries">Copy Series Data</button>
+  	`;
+	document.body.appendChild(seriesMenu);
+	$.get("#nextLvl").onclick = function () {
+		series[currLvl] = Object.assign({}, level);
+		currLvl++;
+		currLvl %= series.length;
+		$.get("#levelText").innerText = `Level ${currLvl + 1}/${series.length}`;
+		level = series[currLvl];
+	}
+	$.get("#prevLvl").onclick = function () {
+		currLvl--;
+		while (currLvl < 0)
+			currLvl = series.length + currLvl;
+		$.get("#levelText").innerText = `Level ${currLvl + 1}/${series.length}`;
+		level = series[currLvl];
+	}
+	$.get("#addLvl").onclick = function () {
+		series.insert(currLvl++, createLevel());
+		$.get("#levelText").innerText = `Level ${currLvl + 1}/${series.length}`;
+		level = series[currLvl];
+	}
+	$.get("#delLvl").onclick = function () {
+		if (series.length <= 1)
+			return alert("Series needs at least one level");
+		if (!confirm("Are you sure you want to delete this level? (this cannot be undone)"))
+			return;
+		delete series[currLvl];
+		series = series.filter(function(e){ return e === 0 || e });
+		currLvl--;
+		while (currLvl < 0)
+			currLvl = series.length + currLvl;
+		$.get("#levelText").innerText = `Level ${currLvl + 1}/${series.length}`;
+		level = series[currLvl];
+	}
+	$.get("#exportSeries").onclick = function () {
+		// Get the text field
+		var copyText = $.get("#exportSeries");
+		
+		// Select the text field
+		copyText.select();
+		copyText.setSelectionRange(0, 99999); // For mobile devices
+		
+		// Copy the text inside the text field
+		navigator.clipboard.writeText(genSeriesData(series));
+		$.get("#exportSeries").innerText = "Copied!";
+	}
+	
+	$.get("#exportSeries").onmouseout = function () {
+		$.get("#exportSeries").innerText = "Copy Series Data";
+	}
+	$.get("#seriesName").setAttribute("contenteditable", "true");
+	$.get("#seriesName").oninput = function() {
+		series.name = $.get("#seriesName").innerText;
+	};
+	$.get("#seriesAuthor").setAttribute("contenteditable", "true");
+	$.get("#seriesAuthor").oninput = function() {
+		series.author = $.get("#seriesAuthor").innerText;
+	};
+	$.get("#seriesDesc").setAttribute("contenteditable", "true");
+	$.get("#seriesDesc").oninput = function() {
+		series.author = $.get("#seriesDesc").innerText;
+	};
+	var editables = $.all("*[contenteditable=\"true\"]");
+	[].forEach.call(editables, el => {
+		el.paste = function (e) {
+			e.preventDefault();
+			var text = e.clipboardData.getData("text/plain").replace("&", "&amp;").replace("<", "&gt;").replace(">", "&lt;");
+			console.log(text);
+			document.execCommand("insertText", false, text);
+			
+		};
+	});
+	console.log(editables);
 }

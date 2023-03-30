@@ -114,7 +114,10 @@ function nextLevel() {
 	if (lvl == levels.length - 1) {			// if you reach the last level then it will record your time if you beat your record
 		if (timer < cookie.bestTime || cookie.bestTime == "N/A") 
 			cookie.bestTime = Math.floor(timer);
-		bestEl.innerText = "Best Time: " + cookie.bestTime;
+		if (deaths < cookie.bestDeaths || cookie.bestDeaths == "N/A") 
+			cookie.bestDeaths = deaths;
+		bestDeathsEl.innerText = "Personal Death Record: " + cookie.bestDeaths;
+		bestTimeEl.innerText = "Best Time: " + cookie.bestTime;
 		cookie.completed();
 	}
 	practice.checkpoint = {
@@ -128,16 +131,8 @@ document.getElementById("name").innerText = level.name;					// display level inf
 document.getElementById("author").innerText = level.author;				// 
 document.getElementById("description").innerText = level.description;	// ---
 
-timerEl = document.createElement("p");
-timerEl.innerText = "Current Time: 0";
-timerEl.id = "timer";
-document.body.appendChild(timerEl);
-bestEl = document.createElement("p");
-bestEl.innerText = "Best Time: N/A";
-bestEl.id = "bestTime";
-document.body.appendChild(bestEl);
-
 setTimeout(function () {
 	cookie = getLevelCookie("story");
-	bestEl.innerText = "Best Time: " + cookie.bestTime;
+	bestTimeEl.innerText = "Best Time: " + cookie.bestTime;
+	bestDeathsEl.innerText = "Personal Death Record: " + cookie.bestDeaths;
 }, 100);

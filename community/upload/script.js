@@ -6,34 +6,7 @@
  *     started: 2022/03/15 (YYYY/MM/DD)
  * last edited: 2022/03/15
  */
-function upload(data) {
-    var ws = new WebSocket("wss://server.4j89.repl.co/");
-    ws.onopen = function (e) {
-        ws.send("upload:" + data);
-    }
-    ws.onmessage = function (e) {
-        var msg = e.data;
-		if (msg == "server overloaded") {
-			window.alert("upload failed: server is overloaded");
-		} else if (msg == "invalid level data") {
-			window.alert("upload failed: invalid level data");
-		} else if (msg.endsWith("in the queue")) {
-			document.body.innerHTML = `
-				<center>
-					<h1>Upload a Level to the Servers</h1>	
-				  	<h3>Success!</h3>
-	   				<p>you are ${msg}</p>
-				</center>
-				`;
-			window.alert("upload success, you are " + msg);
-		} else if (msg == "server error") {
-			window.alert("upload failed: server error");
-		} else {
-			window.alert("unknown server response");
-		}
-    }
-    return ws;
-}
+var sv = new Server("wss://server.4j89.repl.co");
 
 document.body.innerHTML = `
 <center>
@@ -51,7 +24,7 @@ document.body.innerHTML = `
 </center>
 `;
 document.getElementById("textUpload").onclick = function () {
-	upload(
+	sv.uploadLevel(
 		document.getElementById("text").value
 	);
 };
@@ -73,7 +46,7 @@ document.getElementById("fileUploadButton").onclick = function () {
 	} catch {
 		window.alert("invalid base64");
 	}
-	upload(
-		lvlData
+	sv.uploadLevel(
+		document.getElementById("text").value
 	);
 };

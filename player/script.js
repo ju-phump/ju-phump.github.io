@@ -5,21 +5,8 @@
  *
  * code by Dante Davis
  *     started: 2022/03/04 (YYYY/MM/DD)
- * last edited: 2022/03/09
+ * last edited: 2022/03/27
  */
-function setFps(v) {					// sets the framerate
-	ms = 1000/v;
-	move = (128 * speed) * (ms / 1000);
-}
-function setSpeed(v) {					// sets the speed of the game (maintains fps and changes movement)
-	speed = v;
-	move = (128 * speed) * (ms / 1000);
-}
-function setFrameSpeed(fps, spd) {		// sets the speed of the game (maintains movement and changes fps)
-	ms = 1000/fps;
-	move = (128 * speed) * (ms / 1000);
-	ms /= spd;
-}
 var pc, lc;
 var practice = {
 	"active": false,
@@ -30,24 +17,42 @@ var practice = {
 	}
 };
 var inputBuffer = {};
-var bestEl, timerEl;
+var bestTimeEl, timerEl;
+function setFps(v) {						// sets the framerate
+	ms = Math.floor(1000 / v);
+	move = (128 * speed) * (ms / 1000);
+}
+function setSpeed(v) {					// sets the speed of the game (maintains fps and changes movement)
+	speed = v;
+	move = (128 * speed) * (ms / 1000);
+}
+function setFrameSpeed(fps, spd) {		// sets the speed of the game (maintains movement and changes fps)
+	ms = Math.floor(1000 / fps / spd);
+	move = (128 * speed) * (ms / 1000) * spd;
+}
 function unwin() {
-		document.getElementById("text").innerText = "press any key to start";
-	}
+	$.get("#text").innerText = "press any key to start";
+}
 function win() {
-	document.getElementById("text").innerText = "press any key to start (level completed)";
+	$.get("#text").innerText = "press any key to start (level completed)";
 	reset();
 	try{nextLevel();}catch{}	// runs a function so that people can implement series of levels that go to the next after you win
 }
 function start() {
 	started = true;
+	lastFrame = performance.now();
 	setTimeout(onFrame, ms);
 	flush(lc);
 	size = getMapSize();
 	drawLevel();
-	document.getElementById("text").setAttribute("visible", false);
-	document.getElementById("lvlInfo").setAttribute("visible", false);
+	$.get("#text").setAttribute("visible", false);
+	$.get("#lvlInfo").setAttribute("visible", false);
 	console.log(started);
+}
+function die() {
+	deaths++;
+	deathsEl.innerText = "Deaths: " + deaths;
+	reset();
 }
 function reset() {
 	if (practice.active) {
@@ -71,21 +76,39 @@ function reset() {
 		+ -(cam.y * plrCanvas.width) + "px)";
 	started = false;
 	buffer = true;									// if you're colliding with something on start then it should affect you immediately rather than waiting a frame
-	document.getElementById("text").setAttribute("visible", true);
-	document.getElementById("lvlInfo").setAttribute("visible", true);
+	$.get("#text").setAttribute("visible", true);
+	$.get("#lvlInfo").setAttribute("visible", true);
 	console.log(started);
 }
+var lastCheck = 0;
+var frames = 0;
+var secondTimer = 0;
 function onFrame() {
+
+	var delta = performance.now() - lastFrame;		// get the true delay between frames
+	var adjust = ms / delta;
+	
+	frames++;
+	secondTimer += delta;
+	var timerSecond = Math.floor(timer / 1000);
+	if (timerSecond > lastCheck) {
+		lastCheck = timerSecond;
+		$.get("#fps").innerText = ((1000 * frames) / secondTimer).toFixed(2);
+		frames = 0;
+		secondTimer = 0;
+	}
+
+	
 	if (input["w"] || input["ArrowUp"]) {
-		player.y -= move * Math.sign(gravity);
+		player.y -= move * Math.sign(gravity) * adjust;
 	} else {
-		player.y += move * gravity;
+		player.y += move * gravity * adjust;
 	}
 	if (input["a"] || input["ArrowLeft"]) {
-		player.x -= move;
+		player.x -= move * adjust;
 	}
 	if (input["d"] || input["ArrowRight"]) {
-		player.x += move;
+		player.x += move * adjust;
 	}
 	if (input["r"]) {
 		reset();
@@ -129,7 +152,7 @@ function onFrame() {
 	} else if (pTile.v != 0) {
 		if (buffer) {
 			if (pTile.v == "1")
-				reset();
+				die();
 			else if (pTile.v == "3")
 				gravity = -1;
 			else if (pTile.v == "4")
@@ -137,7 +160,7 @@ function onFrame() {
 			else if (pTile.v == "5")
 				for (i in input)
 					if (input[i] == 1)
-						reset();
+						die();
 		} else
 			buffer = true;
 	} else if (buffer)
@@ -171,23 +194,26 @@ function onFrame() {
 	// drawRect(pc, pTile.x * 16, pTile.y * 16, 16, 16, false);	// 		this fills the tile that the game thinks the player is on
 	pc.fillStyle = "#000000"
 	drawImg(pc, // draw to the player canvas
-			sprites["timmivoq_" + (Math.floor(timer / 10) % 2)],	// get the sprite (changes 4 times a second)
+			sprites["timmivoq_" + Math.floor(timer / 10) % 2],	// get the sprite (changes 10 times a second)
 			player.x % 512,
 			player.y % 512,
 	16, 16);
 	
 	
 	console.log(ms);
-	timer += ms;
+	console.log(delta);
+	timer += delta;
 	timerEl.innerText = "Current Time: " + Math.floor(timer);
 	for (i in input)
 		if (input[i])
 			input[i]++;
 	if (started) 
 		setTimeout(onFrame, ms);
+	lastFrame = performance.now();
 }
 var speed = 1;								// how fast the game should run
-var ms = 0;									// the delay in miliseconds between each frame
+var ms = 0;									// the intended delay in miliseconds between each frame
+var lastFrame = 0;							// the timestamp of the last frame
 var move = (128 * speed) * (ms / 1000);		// tells the player how many pixels it should move
 
 var 
@@ -249,6 +275,28 @@ function loadPlayer() {
 	txt.className = "center";
 	txt.id = "text";
 	document.body.appendChild(txt);
+	
+	fpsEl = document.createElement("p");
+	fpsEl.innerText = "0";
+	fpsEl.id = "fps";
+	document.body.appendChild(fpsEl);
+	timerEl = document.createElement("p");
+	timerEl.innerText = "Current Time: 0";
+	timerEl.id = "timer";
+	document.body.appendChild(timerEl);
+	bestTimeEl = document.createElement("p");
+	bestTimeEl.innerText = "Best Time: N/A";
+	bestTimeEl.id = "bestTime";
+	document.body.appendChild(bestTimeEl);
+	deathsEl = document.createElement("p");
+	deathsEl.innerText = "Deaths: 0";
+	deathsEl.id = "Deaths";
+	document.body.appendChild(deathsEl);
+	bestDeathsEl = document.createElement("p");
+	bestDeathsEl.innerText = "Personal Death Record: N/A";
+	bestDeathsEl.id = "bestDeaths";
+	document.body.appendChild(bestDeathsEl);
+	
 	cam.x = Math.floor(player.x / 512);
 	cam.y = Math.floor(player.y / 512);
 	lvlCanvas.style.transform = "translate(" + -(cam.x * plrCanvas.width) + "px,  " + -(cam.y * plrCanvas.width) + "px)";
@@ -262,3 +310,4 @@ function loadPlayer() {
 	size = getMapSize();
 	drawLevel();
 }
+var deaths = 0;
